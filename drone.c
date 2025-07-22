@@ -48,8 +48,9 @@ void *receive_from_center(void *arg) {
             exit(1);
         }
 
-        // don't receive messages from essage dropped randomly
+        // don't receive message from itself
         if (strcmp(msg.sender_id, local_drone_id) != 0) {
+            // message dropped randomly
             #ifdef PACKET_LOSS_ENABLE
                 // for random
                 int random_value = ((rand() * 2654435761U) / getpid()) % 100;

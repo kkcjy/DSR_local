@@ -549,7 +549,7 @@ void printRangingMessage(Ranging_Message_t *rangingMessage) {
 
     DEBUG_PRINT("[Rx]:\n");
     for(int i = 0; i < MESSAGE_BODY_UNIT_SIZE; i++){
-        DEBUG_PRINT("address: %u, seqNumber: %u, timestamp: %llu\n", rangingMessage->bodyUnits[i].address, rangingMessage->bodyUnits[i].Rxtimestamp.seqNumber, rangingMessage->bodyUnits[i].Rxtimestamp.timestamp.full);
+        DEBUG_PRINT("address: %u, seqNumber: %u, timestamp: %llu\n", rangingMessage->bodyUnits[i].address, rangingMessage->bodyUnits[i].seqNumber, rangingMessage->bodyUnits[i].timestamp.full);
     }
     DEBUG_PRINT("\n");
 }
@@ -1089,12 +1089,12 @@ Time_t generateMessage(Ranging_Message_t *rangingMessage) {
 
     /* generate bodyUnit */
     while(bodyUnitCount < MESSAGE_BODY_UNIT_SIZE && bodyUnitCount < rangingTableSet->size) {
-        Message_Body_Unit_t *bodyUnit = &rangingMessage->bodyUnits[bodyUnitCount];
-
         index_t index = rangingTableSet->priorityQueue[bodyUnitCount];
 
-        bodyUnit->address = rangingTableSet->rangingTable[index].neighborAddress;
-        bodyUnit->Rxtimestamp = rangingTableSet->lastRxtimestamp[index];
+        // update timestamp field first to avoid memory overwrite
+        rangingMessage->bodyUnits[bodyUnitCount].timestamp = rangingTableSet->lastRxtimestamp[index].timestamp;
+        rangingMessage->bodyUnits[bodyUnitCount].seqNumber = rangingTableSet->lastRxtimestamp[index].seqNumber;
+        rangingMessage->bodyUnits[bodyUnitCount].address = rangingTableSet->rangingTable[index].neighborAddress;
 
         rangingMessage->header.filter |= 1 << (rangingTableSet->rangingTable[index].neighborAddress % 16);
         
@@ -1188,8 +1188,9 @@ void processMessage(Ranging_Message_With_Additional_Info_t *rangingMessageWithAd
     if (rangingMessage->header.filter & (1 << (uwbGetAddress() % 16))) {
         uint8_t bodyUnitCount = (rangingMessage->header.msgLength - sizeof(Message_Header_t)) / sizeof(Message_Body_Unit_t);
         for(int i = 0; i < bodyUnitCount; i++) {
-            if(rangingMessage->bodyUnits[i].address == uwbGetAddress()) {
-                Rf = rangingMessage->bodyUnits[i].Rxtimestamp;
+            if(rangingMessage->bodyUnits[i].address == (uint8_t)uwbGetAddress()) {
+                Rf.timestamp = rangingMessage->bodyUnits[i].timestamp;
+                Rf.seqNumber = rangingMessage->bodyUnits[i].seqNumber;
                 break;
             }
         }

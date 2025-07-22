@@ -58,10 +58,19 @@ typedef struct {
     uint16_t msgLength;                 // size of message
 } __attribute__((packed)) Message_Header_t;             // 8 + 10 * MESSAGE_TX_POOL_SIZE byte = 38 byte
 
-typedef struct {
-    uint16_t address;                   // address of neighbor
-    Timestamp_Tuple_t Rxtimestamp;      // last local Rxtimestamp when message is received
-} __attribute__((packed)) Message_Body_Unit_t;          // 2 + 10 byte = 12 byte
+// typedef struct {
+//     uint16_t address;                   // address of neighbor
+//     Timestamp_Tuple_t Rxtimestamp;      // last local Rxtimestamp when message is received
+// } __attribute__((packed)) Message_Body_Unit_t;          // 2 + 10 byte = 12 byte
+
+typedef union{
+    struct {
+        uint8_t rawtime[5]; 
+        uint8_t address;                // address of neighbor
+        uint16_t seqNumber;             // last local Rxtimestamp.seqNumber when message is received
+    } __attribute__((packed));
+    dwTime_t timestamp;                 // last local Rxtimestamp.timestamp when message is received
+} Message_Body_Unit_t;                                  // 8 byte
 
 typedef struct {
     Message_Header_t header;

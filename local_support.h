@@ -101,48 +101,8 @@ typedef union {
 	} __attribute__((packed));
 } dwTime_t;		
 
-/*
-typedef enum {
-	UWB_REVERSED_MESSAGE,
-	UWB_TRANSCEIVE_MESSAGE,
-	UWB_RANGING_MESSAGE,
-	UWB_FLOODING_MESSAGE,
-	UWB_DATA_MESSAGE,
-	UWB_AODV_MESSAGE,
-	UWB_OLSR_MESSAGE,
-	PRINT,
-	SNIFFER,
-	UWB_MESSAGE_TYPE_COUNT,
-} UWB_MESSAGE_TYPE;
-
-typedef struct {
-  UWB_Address_t srcAddress;
-  UWB_Address_t destAddress;
-  uint16_t seqNumber;
-  struct {
-	  UWB_MESSAGE_TYPE type: 6;
-      uint16_t length: 10;
-    } __attribute__((packed));
-} __attribute__((packed)) UWB_Packet_Header_t;
-
-typedef struct {
-  UWB_Packet_Header_t header;
-  uint8_t payload[UWB_PAYLOAD_SIZE_MAX];
-} __attribute__((packed)) UWB_Packet_t;
-
-typedef void (*UWBCallback)(void *);
-
-typedef struct {
-  UWB_MESSAGE_TYPE type;
-  QueueHandle_t rxQueue;
-  UWBCallback rxCb;
-  UWBCallback txCb;
-} UWB_Message_Listener_t;
-*/
-
 
 void DEBUG_PRINT(const char *format, ...);
-void vTaskDelay(const TickType_t xTicksToDelay);
 SemaphoreHandle_t xSemaphoreCreateMutex();
 
 #endif

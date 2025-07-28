@@ -26,12 +26,6 @@ void DEBUG_PRINT(const char *format, ...) {
     }
 }
 
-/*
-void vTaskDelay(const TickType_t xTicksToDelay) {
-    usleep(1000 * (xTicksToDelay));
-}
-*/
-
 SemaphoreHandle_t xSemaphoreCreateMutex() {
     pthread_mutex_t *mutex = malloc(sizeof(pthread_mutex_t));
     if (mutex == NULL) {
